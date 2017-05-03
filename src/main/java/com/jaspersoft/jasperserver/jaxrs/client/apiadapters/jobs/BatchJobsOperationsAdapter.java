@@ -44,11 +44,13 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.map.AnnotationIntrospector;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.AnnotationIntrospector;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationConfig;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
 import static com.jaspersoft.jasperserver.jaxrs.client.core.JerseyRequest.buildRequest;
 
@@ -105,11 +107,13 @@ public class BatchJobsOperationsAdapter extends AbstractAdapter {
 
     private String buildJson(Object object) {
 
-        ObjectMapper mapper = new ObjectMapper();
+    	ObjectMapper mapper = new ObjectMapper();
         SerializationConfig serializationConfig = mapper.getSerializationConfig();
-        serializationConfig = serializationConfig.withSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
-        AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
-        mapper.setSerializationConfig(serializationConfig);
+        serializationConfig = serializationConfig.withSerializationInclusion(Include.NON_NULL);
+        
+        AnnotationIntrospector introspector = new JaxbAnnotationIntrospector(mapper.getTypeFactory());
+//        mapper.setConfig(serializationConfig);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         mapper.setAnnotationIntrospector(introspector);
 
         try {
